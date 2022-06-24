@@ -12,7 +12,7 @@ class Category
     public static function allCategories(): array
     {
         $dbh = (new Db())->getHandler();
-        $statement = $dbh->query('select * from categories');
+        $statement = $dbh->query('select * from cars');
         $initialCategories = $statement->fetchAll();
 
         return array_map(function ($initialCategory) {

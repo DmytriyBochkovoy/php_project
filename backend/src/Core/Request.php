@@ -8,6 +8,8 @@ class Request
 
     private string $method = 'index';
 
+    public Validator $validator;
+
     public function __construct()
     {
         $uri = explode('/', $_SERVER['REQUEST_URI']);
@@ -20,6 +22,23 @@ class Request
         if (isset($uri[2])) {
             $this->method = $uri[2];
         }
+
+        $this->validator = new Validator();
+    }
+
+    public function validate($rules): void
+    {
+        foreach ($rules as $key => $rule) {
+            $this->validator->validate($rule, $key, $this->input($key));
+        }
+    }
+
+    public function getErrors() {
+        return $this->validator->errors;
+    }
+
+    public function isErrorsNotEmpty() {
+        return !!count($this->getErrors());
     }
 
     public function validateCommand(): bool
@@ -61,4 +80,19 @@ class Request
         
         return true;
     }
+
+    public function only($keys) {
+        $data = [];
+
+        foreach ($keys as $value) {
+            $data[$value] = $this->input($value);
+        }
+
+        return $data;
+    }
+
+    public function input($key) {
+        return $_POST[$key] ?? null;
+    }
+
 }
